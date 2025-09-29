@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color _seedColor = Color(0xFF5B3B8C);
+  static const Color defaultSeed = Color(0xFF5B3B8C);
 
-  static ThemeData get light => _baseTheme(Brightness.light);
-  static ThemeData get dark => _baseTheme(Brightness.dark);
+  static ThemeData light({Color? seed}) => _baseTheme(
+        brightness: Brightness.light,
+        seedColor: seed ?? defaultSeed,
+      );
 
-  static ThemeData _baseTheme(Brightness brightness) {
+  static ThemeData dark({Color? seed}) => _baseTheme(
+        brightness: Brightness.dark,
+        seedColor: seed ?? defaultSeed,
+      );
+
+  static ThemeData _baseTheme({
+    required Brightness brightness,
+    required Color seedColor,
+  }) {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: _seedColor,
+      seedColor: seedColor,
       brightness: brightness,
     );
 
-  final typography =
-    Typography.material2021(platform: TargetPlatform.android);
-  final textTheme = (brightness == Brightness.dark
-      ? typography.white
-      : typography.black)
-    .apply(fontFamily: 'Roboto');
+    final typography =
+        Typography.material2021(platform: TargetPlatform.android);
+    final textTheme = (brightness == Brightness.dark
+            ? typography.white
+            : typography.black)
+        .apply(fontFamily: 'Roboto');
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
       textTheme: textTheme,
-      typography: Typography.material2021(platform: TargetPlatform.android),
+      typography: typography,
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,

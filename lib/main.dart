@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rectran/app.dart';
 import 'package:rectran/features/library/application/library_controller.dart';
 import 'package:rectran/features/recording/application/recording_controller.dart';
+import 'package:rectran/features/settings/application/settings_controller.dart';
 import 'package:rectran/features/transcription/application/transcription_controller.dart';
 
 void main() {
@@ -22,6 +23,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
   late final LibraryController _libraryController;
   late final TranscriptionController _transcriptionController;
   late final RecordingController _recordingController;
+  late final SettingsController _settingsController;
 
   @override
   void initState() {
@@ -34,13 +36,18 @@ class _AppBootstrapState extends State<AppBootstrap> {
         _transcriptionController.createDraftFromRecording(
           title: title,
           duration: duration,
+          language: _settingsController.defaultTranscriptionLanguage,
         );
       },
+    );
+    _settingsController = SettingsController(
+      recordingController: _recordingController,
     );
   }
 
   @override
   void dispose() {
+    _settingsController.dispose();
     _recordingController.dispose();
     _transcriptionController.dispose();
     _libraryController.dispose();
@@ -53,6 +60,9 @@ class _AppBootstrapState extends State<AppBootstrap> {
       providers: [
         ChangeNotifierProvider<RecordingController>.value(
           value: _recordingController,
+        ),
+        ChangeNotifierProvider<SettingsController>.value(
+          value: _settingsController,
         ),
         ChangeNotifierProvider<TranscriptionController>.value(
           value: _transcriptionController,

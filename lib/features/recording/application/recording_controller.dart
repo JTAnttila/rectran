@@ -17,6 +17,8 @@ class RecordingController extends ChangeNotifier {
   Timer? _ticker;
   final List<RecordingSession> _sessions = <RecordingSession>[];
   String? _errorMessage;
+  bool _highQualityAudio = true;
+  bool _autoCreateDrafts = true;
 
   final void Function(RecordingSession session)? onSessionSaved;
   final void Function(String title, Duration duration)? onDraftCreated;
@@ -26,16 +28,32 @@ class RecordingController extends ChangeNotifier {
   bool get isRecording => _status == RecordingStatus.recording;
   bool get isPaused => _status == RecordingStatus.paused;
   bool get isProcessing => _status == RecordingStatus.processing;
+  bool get highQualityAudio => _highQualityAudio;
+  bool get autoCreateDrafts => _autoCreateDrafts;
   String? get errorMessage => _errorMessage;
   List<RecordingSession> get sessions => List.unmodifiable(_sessions);
+
+  void setHighQualityAudio(bool value) {
+    if (_highQualityAudio == value) {
+      return;
+    }
+    _highQualityAudio = value;
+    notifyListeners();
+  }
+
+  void setAutoCreateDrafts(bool value) {
+    _autoCreateDrafts = value;
+  }
 
   void toggleRecording() {
     switch (_status) {
       case RecordingStatus.idle:
       case RecordingStatus.paused:
         _startRecording();
+        break;
       case RecordingStatus.recording:
         pauseRecording();
+        break;
       case RecordingStatus.processing:
       case RecordingStatus.error:
         break;
@@ -69,7 +87,11 @@ class RecordingController extends ChangeNotifier {
     _ticker?.cancel();
     notifyListeners();
 
-    await Future<void>.delayed(const Duration(seconds: 2));
+    final processingDelay = _highQualityAudio
+        ? const Duration(seconds: 3)
+        : const Duration(seconds: 1);
+    await Future<void>.delayed(processingDelay);
+
     final session = RecordingSession(
       id: const Uuid().v4(),
       title: _generateTitle(),
@@ -78,13 +100,15 @@ class RecordingController extends ChangeNotifier {
       transcriptionStatus: RecordingTranscriptionStatus.inProgress,
     );
     _sessions.insert(0, session);
-
     onSessionSaved?.call(session);
-    onDraftCreated?.call(session.title, session.duration);
 
     _status = RecordingStatus.idle;
     _elapsed = Duration.zero;
     notifyListeners();
+
+    if (_autoCreateDrafts) {
+      onDraftCreated?.call(session.title, session.duration);
+    }
   }
 
   void resetError() {
@@ -106,7 +130,11 @@ class RecordingController extends ChangeNotifier {
 
   String _generateTitle() {
     final now = DateTime.now();
-    return 'Recording ${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    final date =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    final time =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    return 'Recording $date $time';
   }
 
   @override
