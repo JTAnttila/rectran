@@ -1,0 +1,250 @@
+Comprehensive UI Design Instructions for Flutter Voice Recording App
+App Overview
+A minimalistic voice recording and transcription app following Material Design 3 principles, focusing on simplicity and essential functionality.
+Recommended Additional Functions
+Before diving into the design, consider adding:
+
+Playback controls - Listen to recordings before/after transcription
+Search functionality - Find recordings by keywords in transcriptions
+Export options - Share transcriptions (text/audio)
+Settings - Audio quality, storage location, theme preferences
+Edit transcriptions - Manual correction of AI transcriptions
+Bookmarks/favorites - Mark important recordings
+Cloud backup - Sync recordings across devices
+
+
+Design System Foundation
+Color Palette (Material Design 3)
+Define a color scheme using Material 3 dynamic color system. Use the following base colors and let Flutter generate the full color scheme:
+Primary color should be a deep purple shade representing professionalism and creativity. The seed color value should be around the purple spectrum. Use Surface colors for backgrounds, Primary colors for main interactive elements, and Error colors for destructive actions. All color choices should maintain WCAG AA accessibility standards with sufficient contrast ratios.
+On-surface colors should be used for text and icons appearing on surface backgrounds. Primary container colors work well for subtle emphasis areas. Surface variant colors are ideal for cards and elevated components.
+Typography System
+Implement Material 3 typography scale with the following hierarchy:
+Display styles are used for the largest, most impactful text like recording timers. Headline styles work for screen titles and section headers. Title styles are appropriate for card titles and list item headers. Body styles handle main content and transcription text. Label styles are for buttons, tabs, and small UI text.
+Font weights should range from regular (400) for body text to medium (500) for emphasis and bold (700) for strong emphasis. Line heights should be set at 1.5 for body text to ensure readability.
+All text should be selectable where appropriate, especially transcription content. Text should scale according to system accessibility settings.
+Spacing System
+Establish a consistent spacing scale based on multiples of four or eight:
+Extra small spacing (4px) for tight groupings and icon padding. Small spacing (8px) for related elements within components. Medium spacing (16px) as the default spacing between components and for padding. Large spacing (24px) for separating distinct sections. Extra large spacing (32px) for major section breaks and top-level padding.
+Apply spacing consistently throughout the app to create visual rhythm and hierarchy. Use padding inside components and margin between components.
+Elevation and Shadows
+Follow Material Design elevation system with appropriate levels:
+Level zero for flat surfaces like app bars in scroll state. Level one for cards in rest state. Level two for cards in hover or pressed state. Level three for modal surfaces like dialogs. Level six for floating action buttons.
+Shadows should be subtle and use the surface tint color overlay method from Material 3 rather than traditional black shadows.
+
+Screen One: Home Screen (Recording Interface)
+App Bar Configuration
+The top app bar should have zero elevation when not scrolled, creating a seamless look with the screen content. The title text should read "Voice Recorder" or a similar concise name, using the title large text style. Include a settings icon button in the trailing position with a minimum touch target of 48 by 48 pixels. The app bar background should use the surface color.
+If implementing a scrolling behavior, the app bar should gain elevation when content scrolls beneath it, following Material Design scroll behaviors.
+Primary Recording Controls
+The main focal point should be the recording button, implemented as a large floating action button. When idle, it should display a microphone icon and use the primary color scheme. The button size should be 72 pixels in diameter to make it easily tappable and visually prominent.
+When actively recording, transform the button appearance to indicate the recording state. Change the background color to the error color (typically red) to provide clear visual feedback. Consider adding a subtle pulsing animation or scale effect to draw attention. The icon could change to a pause symbol or remain as a microphone with the color change providing the state indication.
+A secondary stop button should appear only during active recording. This button can be smaller, around 56 pixels in diameter, and positioned adjacent to the main button with appropriate spacing. Use a surface variant color scheme for this secondary action. The stop icon should be a filled square symbol.
+Position these buttons in the lower third of the screen but above the bottom navigation if present, ensuring they don't interfere with navigation elements. Center them horizontally with adequate spacing between them when both are visible.
+Audio Visualization
+Include a waveform or audio level visualization component positioned in the upper or middle portion of the screen. This provides real-time feedback during recording and should animate based on audio input levels.
+When idle, display a flat line or minimal wave with a subtle pulsing animation to indicate the app is ready. During recording, animate vertical bars or wave peaks that respond to audio amplitude in real-time. The animation should be smooth with appropriate frame rates.
+The visualization container should have rounded corners (12-16 pixel radius) and use the surface variant background color. Apply adequate padding around the visualization (24 pixels horizontal, 16 pixels vertical). The height should be substantial enough to be visually engaging, approximately 180-220 pixels.
+Timer Display
+Show elapsed recording time prominently below or near the visualization. Use the display large or headline large text style for maximum readability. Format the time as minutes and seconds (MM:SS) for recordings under an hour, or hours, minutes, and seconds (HH:MM:SS) for longer recordings.
+The timer should update in real-time during recording. Use a monospace font or tabular figures to prevent layout shifts as numbers change. Center-align the timer for visual balance.
+Quick Action Buttons
+After stopping a recording, reveal quick action buttons that allow immediate next steps. These should appear with a smooth animation, either sliding up from the bottom or fading in.
+Include a "Transcribe" button and a "Save" button as primary actions. These can be styled as filled tonal buttons (Material 3 style) or outlined buttons for a lighter appearance. Each button should be at least 48 pixels in height and take up roughly equal width when placed side by side with spacing between them.
+The "Transcribe" button initiates the transcription process and navigates to the transcription tab. The "Save" button stores the recording without immediate transcription. Consider adding a "Discard" option as a text button with less emphasis.
+Recording State Feedback
+Provide clear feedback for all recording states. When starting a recording, show a brief snackbar message confirming "Recording started." When paused or stopped, show appropriate messages. If an error occurs (microphone permission denied, storage full), display an error snackbar with an action button to resolve the issue.
+Consider adding haptic feedback when starting, pausing, or stopping recordings to provide tactile confirmation of actions.
+
+Screen Two: Transcription Tab
+Audio Player Component
+At the top of the transcription screen, include a comprehensive audio player for the recorded file. This should be contained within an elevated card component with rounded corners and appropriate padding.
+The player should display the recording title or filename at the top, using the title medium text style. Below that, show playback controls in a horizontal row: a play/pause toggle button (48x48 minimum), a progress slider showing current position and total duration, and timestamp labels on either side of the slider showing current time and total duration.
+The play/pause button should be prominent and use the primary color. The slider should follow Material Design guidelines with a track, active indicator, and thumb. Make the slider thumb large enough for easy dragging (at least 44 pixels in touch target size).
+Consider including additional controls like skip forward and backward buttons (10 or 15 seconds), a playback speed selector, and a volume control if needed.
+Transcription Status Indicator
+Show the current status of the transcription process using a status chip or small container near the top of the screen. Position this below the audio player or as part of it.
+For a transcription in progress, display "Processing" or "Transcribing" with a small circular progress indicator animation. Use a warning or information color scheme for the background.
+For completed transcriptions, show "Completed" with a success color scheme (green tones). For failed transcriptions, show "Failed" with an error color scheme and provide a retry button.
+The status indicator should be subtle but noticeable, using the label large text style.
+Transcription Content Display
+The main content area displays the transcribed text. This should be a scrollable region that takes up the majority of the screen space below the player and status indicator.
+Use the body large text style for the transcription content with a line height of at least 1.5 for comfortable reading. The text should be fully selectable, allowing users to highlight and copy specific portions.
+Apply adequate padding around the text content (16-20 pixels on all sides). Use the surface background color for the content area to maintain consistency with the overall app theme.
+If the transcription includes timestamps or speaker identification, format these distinctly using the body medium text style with a slightly subdued color (on-surface variant).
+Empty and Loading States
+When a transcription is processing, show a loading indicator (circular progress indicator) centered in the content area with descriptive text below it stating "Transcribing audio, this may take a moment." Use the body medium text style for this message.
+If no transcription exists yet, show an empty state with an icon (microphone or text icon), a message like "No transcription available," and a button to "Start Transcription" if the audio exists but hasn't been transcribed yet.
+Action Buttons
+At the bottom of the screen or in a bottom app bar, include action buttons for working with the transcription:
+A "Copy" button that copies the entire transcription to the clipboard and shows a confirmation snackbar. A "Share" button that opens the system share sheet with the transcription text. An "Edit" button that allows manual correction of the transcription, opening an editing interface. An "Export" button that provides options to save as different formats (TXT, PDF, DOCX).
+These buttons can be icon buttons with labels, text buttons, or a combination. Ensure each has a minimum 48-pixel touch target. Consider using a bottom sheet for additional actions if there are many options.
+Confidence Indicators
+If your transcription service provides confidence scores, consider highlighting low-confidence words or phrases with a different color or underline style. This helps users identify areas that may need review.
+
+Screen Three: Previous Recordings (Library)
+Search Functionality
+At the top of the library screen, include a search bar that allows filtering recordings by title or transcription content. The search bar should be a prominent but unobtrusive element.
+Style the search bar with rounded corners (fully rounded, 28 pixel radius) and use the surface variant background color. Include a search icon on the leading edge and a clear button (X icon) on the trailing edge that appears when text is entered.
+The hint text should read "Search recordings" or "Search transcriptions" using the body medium text style with the on-surface variant color for reduced emphasis.
+When the user types in the search field, filter the list in real-time without requiring a submit action. Highlight matching text in search results if possible.
+Recording List Layout
+Display recordings in a vertical scrollable list. Each recording should be represented by a list item or card with clear visual separation between items.
+For the list item layout, use cards with subtle elevation (level 1), rounded corners (12 pixels), and appropriate margins between items (8 pixels vertical, 12-16 pixels horizontal). Each card should have a ripple effect on tap.
+Alternatively, use list tiles with dividers for a more compact layout. Choose the approach that best fits your content density needs.
+List Item Content Structure
+Each recording item should display several key pieces of information clearly:
+The recording title or auto-generated name should be the most prominent text, using the title medium text style with medium font weight. Limit this to one or two lines with ellipsis overflow.
+Below the title, show metadata in a smaller, less prominent text style (body small or caption). This includes the date and time of recording, duration of the recording, and file size if relevant.
+Display the transcription status using a small chip or badge. Use color coding: processing (yellow/amber tones), completed (green tones), failed (red tones), not transcribed (gray tones).
+Include a leading icon or avatar that represents the recording type or provides visual interest. This could be a waveform icon, microphone icon, or the first letter of the title in a colored circle. The size should be around 40-48 pixels.
+On the trailing edge of each item, include a more options button (vertical three dots icon) with a 48-pixel touch target. This opens a context menu or bottom sheet with actions specific to that recording.
+Sorting and Filtering Options
+Provide options to sort the recordings list. Common sorting options include: newest first (default), oldest first, alphabetical by title, longest duration first, or most recently modified.
+Display the current sort option in a chip or dropdown near the top of the screen, below the search bar. When tapped, show a bottom sheet or menu with all sort options.
+Consider adding filter chips or buttons to show only certain categories: transcribed recordings, recordings without transcriptions, recordings from specific date ranges, or starred/favorited recordings.
+Context Menu Actions
+When the user taps the more options button on a recording, show a bottom sheet or menu with available actions:
+Play or pause the recording. View or open the transcription if available. Rename the recording with an inline edit or dialog. Share the recording audio or transcription. Add to favorites or bookmark. Move to a folder or add tags if organizational features exist. Delete the recording with a confirmation dialog.
+Each action should have an icon and clear label using the label large text style.
+Empty State
+When the library is empty (no recordings yet), show a friendly empty state in the center of the screen. Include an illustration or icon (microphone or folder icon) at about 64-80 pixels in size.
+Below the icon, display primary text like "No recordings yet" using the title large text style. Add secondary explanatory text like "Start recording to see your audio files here" using the body medium text style with the on-surface variant color.
+Consider including a button that navigates to the recording screen to encourage the first recording.
+List Performance
+For optimal performance with large lists, implement a list view builder or recycler view that only renders visible items. Include a scroll-to-top button that appears when the user scrolls down significantly.
+If the list is extremely long, consider pagination or infinite scroll loading patterns with a loading indicator at the bottom when fetching more items.
+
+Navigation Structure
+Bottom Navigation Implementation
+Use a bottom navigation bar with three destinations for the primary app navigation. The bar should be persistent across all three main screens and use the surface color with appropriate elevation.
+The three navigation destinations should be: Home/Record (microphone or home icon), Transcription (document or text icon), and Library/Recordings (folder or library icon).
+Each navigation item should include both an icon and a label. Use 24-pixel icons and label medium text style for labels. The active destination should be clearly indicated using an active indicator (pill-shaped background behind the icon in Material 3 style) and the primary color scheme.
+Ensure proper navigation behavior: tapping an already-active destination scrolls to the top of that screen, tapping an inactive destination navigates to that screen without animation or with a cross-fade transition.
+Alternative Navigation for Tablets
+On larger screens (tablets), consider using a navigation rail instead of a bottom navigation bar. The navigation rail appears on the left side and provides the same three destinations.
+For very large screens, consider a navigation drawer combined with a rail for additional navigation options or account information.
+
+Dialogs and Modal Interactions
+Delete Confirmation Dialog
+When a user attempts to delete a recording, show an alert dialog requesting confirmation. The dialog should have a clear title like "Delete Recording?" using the title large text style.
+The content text should explain the consequence: "This recording and its transcription will be permanently deleted. This action cannot be undone." Use the body medium text style.
+Provide two action buttons: "Cancel" as a text button in the default color, and "Delete" as a text button in the error color. Position "Cancel" on the left and "Delete" on the right, following Material Design dialog conventions.
+Rename Dialog
+When renaming a recording, show a dialog with a text input field pre-filled with the current name. The dialog title should be "Rename Recording" and include a text field with the label "Recording name."
+Provide "Cancel" and "Save" action buttons. Validate that the new name is not empty before allowing save.
+Permission Dialogs
+If the app requires microphone permission and it hasn't been granted, show an informative dialog or screen explaining why the permission is needed. Follow platform-specific patterns for requesting permissions.
+If permission is denied, show a message guiding the user to app settings to enable the permission manually.
+
+Feedback and Status Communication
+Snackbar Messages
+Use snackbars for brief, non-critical feedback messages that appear temporarily at the bottom of the screen. Common messages include:
+"Recording saved" after successfully saving a recording. "Transcription complete" when transcription finishes. "Copied to clipboard" after copying transcription text. "Recording deleted" after deleting, with an optional "Undo" action button. "Error: Unable to save recording" for error states, with a "Retry" action button.
+Snackbars should appear for 4-6 seconds by default, or longer if they include an action button. Position them above the bottom navigation bar if present.
+Progress Indicators
+For determinate progress (when you know the total duration), use a linear progress indicator showing percentage complete. This is suitable for file uploads or downloads.
+For indeterminate progress (unknown duration), use a circular progress indicator with optional text describing the action, like "Transcribing audio..."
+Show progress indicators in context: inline within a button during action processing, centered on screen for full-screen operations, or as part of a card or dialog for scoped operations.
+Toast Messages
+For very brief feedback that doesn't require user action, consider using simple toast messages. However, prefer snackbars as they're more prominent and accessible.
+
+Settings Screen
+Layout and Organization
+Create a settings screen accessible from the app bar on the home screen. Use a scrollable list of preference items organized into logical sections with section headers.
+Common sections might include: Audio Settings, Transcription Settings, Storage Settings, Appearance Settings, and About.
+Common Settings Options
+For audio settings, include recording quality options (low, medium, high bitrate), audio format selection (MP3, WAV, M4A), and automatic gain control toggle.
+For transcription settings, include language selection for transcription, automatic transcription toggle (transcribe immediately after recording), and transcription service provider selection if multiple options exist.
+For storage settings, show storage location selection, option to auto-delete old recordings after a specified time period, and current storage usage with a visual indicator.
+For appearance settings, include theme selection (light, dark, system default) if not using system theme by default, and accent color picker if offering customization.
+The About section should include app version, privacy policy link, terms of service link, and acknowledgments or open source licenses.
+Settings UI Patterns
+Use switch widgets for boolean toggle settings. Use dropdown menus or radio button groups for single-selection options. Use sliders for numeric value settings with ranges. Use list tiles with navigation chevrons for settings that open sub-screens.
+Ensure all setting changes are saved immediately or provide a clear save mechanism if batch changes are intended.
+
+Accessibility Considerations
+Touch Targets and Spacing
+Ensure all interactive elements have a minimum touch target size of 48 by 48 pixels, as recommended by Material Design accessibility guidelines. This includes buttons, icon buttons, switches, and list items.
+Maintain adequate spacing between interactive elements to prevent accidental taps. A minimum of 8 pixels separation is recommended.
+Screen Reader Support
+Provide semantic labels for all interactive elements that describe their purpose. For icon-only buttons, add content descriptions or accessibility labels.
+Ensure proper reading order by structuring your layout hierarchy logically. Use semantic widgets where possible (like ListTile, Card) as they have built-in accessibility support.
+For custom widgets, implement semantic properties to describe their role, state, and actions to assistive technologies.
+Text and Contrast
+Support dynamic type scaling by using scalable text styles throughout the app. Test the app with large text sizes to ensure layout doesn't break.
+Ensure sufficient color contrast between text and backgrounds to meet WCAG AA standards (4.5:1 for normal text, 3:1 for large text). The Material Design 3 color system generally provides accessible color pairs when used correctly.
+Avoid conveying information through color alone. Supplement color indicators with text labels or icons.
+Focus and Navigation
+Support keyboard navigation for users who navigate without touch. Ensure proper focus order and visible focus indicators.
+Provide clear focus states for all interactive elements with sufficient contrast and size.
+Reduced Motion
+Respect the system's reduced motion accessibility setting. When enabled, disable or simplify animations like the waveform pulsing, page transitions, and button scale effects.
+Maintain functionality while reducing motion - for example, still show state changes but without animated transitions.
+
+Performance Optimization
+List Rendering
+For the recordings library, implement efficient list rendering using builder patterns that only create widgets for visible items. Avoid rendering the entire list at once if it contains many items.
+Implement item recycling to reuse widget instances as the user scrolls.
+Audio Processing
+Process audio operations (recording, playback, transcription) on background threads or isolates to prevent UI blocking. Show loading states while operations are in progress.
+Implement proper lifecycle management to handle interruptions like phone calls during recording.
+Image and Asset Loading
+If including waveform thumbnails or other visual assets in the recordings list, implement lazy loading and caching strategies. Load thumbnails only when items come into view.
+Use appropriately sized assets to minimize memory usage. Avoid loading full-resolution images where thumbnails suffice.
+State Management
+Choose an appropriate state management solution for your app complexity. For this app, provider, riverpod, or bloc patterns work well.
+Avoid unnecessary rebuilds by properly scoping state changes to affected widgets only.
+
+Animations and Transitions
+Page Transitions
+Use Material Design 3 shared axis transitions for navigation between screens. The forward/backward axis works well for sequential flows like Home to Transcription.
+For modal surfaces like dialogs and bottom sheets, use fade through transitions combined with scale or vertical slide animations.
+Micro-interactions
+Apply subtle animations to enhance feedback and delight. Button presses should scale down slightly (to 95% size) over 100 milliseconds with an ease-out curve.
+The recording button should have a more prominent animation: a scale pulse effect at 800-1000 millisecond intervals during active recording, or a color transition animation when changing states.
+Loading States
+When transitioning between empty and populated states (like loading recordings list), use staggered fade-in animations. Animate list items sequentially with a short delay (30-50 milliseconds) between each item's appearance.
+For progress indicators, use smooth continuous animations. The Material circular progress indicator animates naturally.
+Waveform Animation
+The waveform visualization should animate smoothly during recording. Update the visualization at least 30 times per second for smooth motion. The animation should respond directly to audio amplitude, creating taller bars or peaks for louder sounds.
+When idle, animate a subtle baseline pulse to indicate readiness without being distracting.
+
+Error Handling and Edge Cases
+Network-Dependent Features
+If transcription requires internet connectivity, check for network availability before starting the process. Show a clear error message if offline: "Transcription requires internet connection" with a retry button that appears when connectivity is restored.
+Storage Management
+Monitor available storage space before starting recordings. If storage is nearly full (below a threshold like 50MB), warn the user before recording starts. If storage fills during recording, gracefully stop the recording and save what was captured.
+Provide clear error messages for storage-related issues: "Insufficient storage space" with suggestions to delete old recordings or free up space.
+Permission Handling
+Handle all permission scenarios gracefully. If microphone permission is denied, show a message explaining the permission is required and provide a button to open app settings.
+If permission is permanently denied on Android, explain that settings must be accessed manually and provide guidance on how to do so.
+Recording Interruptions
+Handle phone calls, alarms, or other audio interruptions during recording. Automatically pause recording when interrupted and show a notification that recording was paused. Allow the user to resume or stop the recording when the interruption ends.
+Transcription Failures
+When transcription fails, preserve the audio recording and clearly communicate the failure. Offer a retry option and consider showing an error code or message for troubleshooting.
+Implement exponential backoff for retry attempts if failures are network-related.
+Data Validation
+Validate file integrity when loading recordings. If a file is corrupted or unreadable, show an error indicator on that recording and prevent playback attempts.
+Validate transcription responses to ensure properly formatted data before displaying.
+
+Security and Privacy
+Data Storage
+Store recordings and transcriptions securely on device using encrypted storage where possible. Follow platform best practices for secure file storage.
+If implementing cloud backup, ensure data is transmitted over encrypted connections (HTTPS) and stored with encryption at rest.
+Transcription Privacy
+If using third-party transcription services, clearly communicate in privacy policy that audio is sent to external services. Consider offering on-device transcription as an option if privacy is a primary concern.
+Implement options to exclude sensitive recordings from cloud backup or transcription.
+Permissions
+Request only necessary permissions and explain why each permission is needed at the point of use. Follow platform-specific timing recommendations for permission requests.
+Provide in-app explanations for each permission before requesting it from the system.
+
+Testing Considerations
+Usability Testing
+Test the app with users of varying technical abilities. Ensure primary functions (record, stop, playback) are immediately understandable without instruction.
+Test with users who rely on accessibility features like screen readers and voice control.
+Performance Testing
+Test the app with large numbers of recordings (100+) to ensure list performance remains smooth. Test with very long recordings (1+ hours) to ensure timers, progress bars, and transcriptions handle extended content.
+Test audio recording and playback across different devices and Android/iOS versions to ensure consistent behavior.
+Edge Case Testing
+Test behavior with no storage space, no internet connection, denied permissions, interrupted recordings, and background/foreground transitions during recording. Verify proper state restoration after app is closed and reopened.
