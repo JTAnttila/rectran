@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:rectran/features/library/application/library_controller.dart';
 import 'package:rectran/features/recording/application/recording_controller.dart';
 import 'package:rectran/features/recording/domain/recording_session.dart';
 import 'package:rectran/features/recording/domain/recording_status.dart';
@@ -9,6 +10,7 @@ import 'package:rectran/features/recording/presentation/widgets/record_status_ch
 import 'package:rectran/features/recording/presentation/widgets/record_timer_display.dart';
 import 'package:rectran/features/recording/presentation/widgets/waveform_placeholder.dart';
 import 'package:rectran/features/settings/presentation/screens/settings_screen.dart';
+import 'package:rectran/features/transcription/application/transcription_controller.dart';
 import 'package:rectran/features/transcription/presentation/screens/transcription_detail_screen.dart';
 
 class RecordingScreen extends StatelessWidget {
@@ -100,6 +102,7 @@ class RecordingScreen extends StatelessWidget {
                             arguments: session.id,
                           );
                         },
+                        onLongPress: () => _confirmDeletion(context, session),
                       );
                     },
                     separatorBuilder: (_, __) => const Divider(height: 1),
@@ -122,6 +125,61 @@ class RecordingScreen extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+}
+
+Future<void> _confirmDeletion(
+  BuildContext context,
+  RecordingSession session,
+) async {
+  final shouldDelete = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) {
+      return AlertDialog(
+        title: const Text('Delete recording?'),
+        content: Text(
+          'Deleting "${session.title}" will remove the audio and any related transcripts. This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor:
+                  Theme.of(dialogContext).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (!context.mounted) {
+    return;
+  }
+
+  if (shouldDelete != true) {
+    return;
+  }
+
+  final recordingController = context.read<RecordingController>();
+  final libraryController = context.read<LibraryController>();
+  final transcriptionController = context.read<TranscriptionController>();
+
+  final deleted = recordingController.deleteSession(session.id);
+  if (deleted) {
+    libraryController.removeSession(session.id);
+    transcriptionController.removeBySourceSessionId(session.id);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Recording "${session.title}" deleted.'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 }
 

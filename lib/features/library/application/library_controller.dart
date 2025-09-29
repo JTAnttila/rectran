@@ -86,6 +86,14 @@ class LibraryController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeSession(String sessionId) {
+    final initialLength = _items.length;
+    _items.removeWhere((item) => item.session.id == sessionId);
+    if (_items.length != initialLength) {
+      notifyListeners();
+    }
+  }
+
   void _seedMockData() {
     final now = DateTime.now();
     final formatter = DateFormat('EEEE, MMM d');

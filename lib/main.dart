@@ -32,8 +32,9 @@ class _AppBootstrapState extends State<AppBootstrap> {
     _transcriptionController = TranscriptionController();
     _recordingController = RecordingController(
       onSessionSaved: _libraryController.addSession,
-      onDraftCreated: (title, duration) {
+      onDraftCreated: (sessionId, title, duration) {
         _transcriptionController.createDraftFromRecording(
+          sessionId: sessionId,
           title: title,
           duration: duration,
           language: _settingsController.defaultTranscriptionLanguage,

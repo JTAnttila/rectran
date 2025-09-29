@@ -18,6 +18,7 @@ class TranscriptionEntry extends Equatable {
     this.summary,
     this.transcript = '',
     this.isFavorite = false,
+    this.sourceSessionId,
   });
 
   final String id;
@@ -29,6 +30,7 @@ class TranscriptionEntry extends Equatable {
   final String? summary;
   final String transcript;
   final bool isFavorite;
+  final String? sourceSessionId;
 
   TranscriptionEntry copyWith({
     String? id,
@@ -40,6 +42,7 @@ class TranscriptionEntry extends Equatable {
     String? summary,
     String? transcript,
     bool? isFavorite,
+    String? sourceSessionId,
   }) {
     return TranscriptionEntry(
       id: id ?? this.id,
@@ -51,6 +54,7 @@ class TranscriptionEntry extends Equatable {
       summary: summary ?? this.summary,
       transcript: transcript ?? this.transcript,
       isFavorite: isFavorite ?? this.isFavorite,
+      sourceSessionId: sourceSessionId ?? this.sourceSessionId,
     );
   }
 
@@ -65,5 +69,6 @@ class TranscriptionEntry extends Equatable {
         summary,
         transcript,
         isFavorite,
+        sourceSessionId,
       ];
 }

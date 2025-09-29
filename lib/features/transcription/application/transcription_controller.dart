@@ -82,6 +82,7 @@ class TranscriptionController extends ChangeNotifier {
   }
 
   void createDraftFromRecording({
+    required String sessionId,
     required String title,
     required Duration duration,
     String language = 'English',
@@ -95,9 +96,25 @@ class TranscriptionController extends ChangeNotifier {
       duration: duration,
       transcript: '',
       summary: 'Auto summaries will appear here once transcription finishes.',
+      sourceSessionId: sessionId,
     );
     _entries.insert(0, entry);
     _activeEntryId = entry.id;
+    notifyListeners();
+  }
+
+  void removeBySourceSessionId(String sessionId) {
+    final initialLength = _entries.length;
+    _entries.removeWhere((entry) => entry.sourceSessionId == sessionId);
+    if (_entries.length == initialLength) {
+      return;
+    }
+    if (_entries.isEmpty) {
+      _activeEntryId = null;
+    } else if (_activeEntryId != null &&
+        !_entries.any((entry) => entry.id == _activeEntryId)) {
+      _activeEntryId = _entries.first.id;
+    }
     notifyListeners();
   }
 

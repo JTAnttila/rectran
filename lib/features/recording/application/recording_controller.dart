@@ -21,7 +21,8 @@ class RecordingController extends ChangeNotifier {
   bool _autoCreateDrafts = true;
 
   final void Function(RecordingSession session)? onSessionSaved;
-  final void Function(String title, Duration duration)? onDraftCreated;
+  final void Function(String sessionId, String title, Duration duration)?
+      onDraftCreated;
 
   RecordingStatus get status => _status;
   Duration get elapsed => _elapsed;
@@ -107,8 +108,18 @@ class RecordingController extends ChangeNotifier {
     notifyListeners();
 
     if (_autoCreateDrafts) {
-      onDraftCreated?.call(session.title, session.duration);
+      onDraftCreated?.call(session.id, session.title, session.duration);
     }
+  }
+
+  bool deleteSession(String sessionId) {
+    final initialLength = _sessions.length;
+    _sessions.removeWhere((session) => session.id == sessionId);
+    if (_sessions.length != initialLength) {
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 
   void resetError() {
