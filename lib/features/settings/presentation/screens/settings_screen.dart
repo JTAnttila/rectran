@@ -320,14 +320,31 @@ class SettingsScreen extends StatelessWidget {
               ...AIModel.values.map((model) {
                 final hasKey = controller.hasApiKeyForProvider(model.provider);
                 return RadioListTile<AIModel>(
-                  title: Text(model.displayName),
+                  title: Text(
+                    model.displayName,
+                    style: !hasKey
+                        ? TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.38),
+                          )
+                        : null,
+                  ),
                   subtitle: Text(
                     '${model.provider.displayName}\n${model.description}',
+                    style: !hasKey
+                        ? TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.38),
+                          )
+                        : null,
                   ),
                   isThreeLine: true,
                   value: model,
                   groupValue: controller.selectedAIModel,
-                  enabled: hasKey,
                   onChanged: hasKey
                       ? (value) {
                           Navigator.of(bottomSheetContext).pop(value);
