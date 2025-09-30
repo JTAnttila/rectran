@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectran/core/services/export_service.dart';
 import 'package:rectran/features/transcription/domain/transcription_entry.dart';
 
 class TranscriptionDetailPanel extends StatefulWidget {
@@ -18,6 +19,7 @@ class TranscriptionDetailPanel extends StatefulWidget {
 
 class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
   late final TextEditingController _controller;
+  final ExportService _exportService = ExportService();
 
   @override
   void initState() {
@@ -59,7 +61,7 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
                 ),
               ),
               FilledButton.icon(
-                onPressed: () {},
+                onPressed: () => _showExportOptions(context),
                 icon: const Icon(Icons.ios_share),
                 label: const Text('Export'),
               ),
@@ -173,5 +175,158 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '${duration.inHours > 0 ? '${duration.inHours.toString().padLeft(2, '0')}:' : ''}$minutes:$seconds';
+  }
+
+  void _showExportOptions(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Export Options',
+                style: textTheme.titleLarge,
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.article_outlined),
+              title: const Text('Export as Text'),
+              subtitle: const Text('Transcript and summary as .txt'),
+              onTap: () => _exportAsText(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.code),
+              title: const Text('Export as Markdown'),
+              subtitle: const Text('Formatted transcript and summary as .md'),
+              onTap: () => _exportAsMarkdown(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.data_object),
+              title: const Text('Export as JSON'),
+              subtitle: const Text('Structured data as .json'),
+              onTap: () => _exportAsJson(context),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.description_outlined),
+              title: const Text('Export transcript only'),
+              onTap: () => _exportTranscriptOnly(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.auto_awesome),
+              title: const Text('Export summary only'),
+              onTap: () => _exportSummaryOnly(context),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _exportAsText(BuildContext context) async {
+    Navigator.pop(context);
+    try {
+      await _exportService.exportAsText(
+        transcript: widget.entry.transcript,
+        summary: widget.entry.summary ?? 'No summary available',
+        createdAt: widget.entry.createdAt,
+        title: widget.entry.title,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportAsMarkdown(BuildContext context) async {
+    Navigator.pop(context);
+    try {
+      await _exportService.exportAsMarkdown(
+        transcript: widget.entry.transcript,
+        summary: widget.entry.summary ?? 'No summary available',
+        createdAt: widget.entry.createdAt,
+        title: widget.entry.title,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportAsJson(BuildContext context) async {
+    Navigator.pop(context);
+    try {
+      await _exportService.exportAsJson(
+        transcript: widget.entry.transcript,
+        summary: widget.entry.summary ?? 'No summary available',
+        createdAt: widget.entry.createdAt,
+        title: widget.entry.title,
+        additionalData: {
+          'language': widget.entry.language,
+          'duration': widget.entry.duration.inSeconds,
+          'status': widget.entry.status.name,
+        },
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportTranscriptOnly(BuildContext context) async {
+    Navigator.pop(context);
+    try {
+      await _exportService.exportTranscriptOnly(
+        transcript: widget.entry.transcript,
+        createdAt: widget.entry.createdAt,
+        title: widget.entry.title,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportSummaryOnly(BuildContext context) async {
+    Navigator.pop(context);
+    if (widget.entry.summary == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No summary available to export')),
+      );
+      return;
+    }
+    try {
+      await _exportService.exportSummaryOnly(
+        summary: widget.entry.summary!,
+        createdAt: widget.entry.createdAt,
+        title: widget.entry.title,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
   }
 }
