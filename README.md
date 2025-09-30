@@ -107,10 +107,10 @@ Before you begin, ensure you have the following installed:
    # Run in release mode for better performance
    flutter run --release
    ```
-
 4. **Configure API Key (First-Time Setup)**
 
    When you first launch the app:
+
    - Go to **Settings** tab
    - Tap on **"Gemini API Key"**
    - Enter your Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey))
@@ -373,16 +373,6 @@ flutter pub get
 flutter run
 ```
 
-#### App size too large
-
-```bash
-# Build with split APKs per ABI
-flutter build apk --release --split-per-abi
-
-# This creates separate APKs for different CPU architectures
-# Reduces size from ~200MB to ~50MB per APK
-```
-
 ---
 
 ## 📊 Performance Optimization
@@ -481,29 +471,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Support
-
-- 🐛 **Bug Reports**: [Open an issue](https://github.com/yourusername/rectran/issues)
-- 💡 **Feature Requests**: [Open an issue](https://github.com/yourusername/rectran/issues)
-- 📧 **Email**: your.email@example.com
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/rectran/discussions)
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Cloud backup integration
-- [ ] Multi-language transcription support
-- [ ] Custom transcription training
-- [ ] Waveform visualization
-- [ ] Desktop app (Windows, macOS, Linux)
-- [ ] Real-time transcription during recording
-- [ ] Speaker diarization
-- [ ] Export to more formats (PDF, DOCX)
-
----
-
-<div align="center">
 
 **Made with ❤️ using Flutter**
 
