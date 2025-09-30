@@ -150,6 +150,19 @@ class RecordingController extends ChangeNotifier {
     return false;
   }
 
+  void updateSessionTranscriptionStatus(
+    String sessionId,
+    RecordingTranscriptionStatus status,
+  ) {
+    final index = _sessions.indexWhere((session) => session.id == sessionId);
+    if (index == -1) return;
+
+    _sessions[index] = _sessions[index].copyWith(
+      transcriptionStatus: status,
+    );
+    notifyListeners();
+  }
+
   void resetError() {
     _errorMessage = null;
     notifyListeners();

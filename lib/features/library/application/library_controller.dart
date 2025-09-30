@@ -7,9 +7,7 @@ import 'package:rectran/features/library/domain/library_filter.dart';
 import 'package:rectran/features/library/domain/library_item.dart';
 
 class LibraryController extends ChangeNotifier {
-  LibraryController() {
-    _seedMockData();
-  }
+  LibraryController();
 
   final List<LibraryItem> _items = <LibraryItem>[];
   LibraryFilter _filter = LibraryFilter.all;
@@ -92,44 +90,5 @@ class LibraryController extends ChangeNotifier {
     if (_items.length != initialLength) {
       notifyListeners();
     }
-  }
-
-  void _seedMockData() {
-    final now = DateTime.now();
-    final formatter = DateFormat('EEEE, MMM d');
-    _items.addAll([
-      LibraryItem(
-        session: RecordingSession(
-          id: const Uuid().v4(),
-          title: 'Design Workshop Recap',
-          createdAt: now.subtract(const Duration(hours: 2)),
-          duration: const Duration(minutes: 42, seconds: 16),
-          transcriptionStatus: RecordingTranscriptionStatus.completed,
-        ),
-        isFavorite: true,
-        tags: const ['Workshop', 'Design'],
-      ),
-      LibraryItem(
-        session: RecordingSession(
-          id: const Uuid().v4(),
-          title: 'Daily Journal - ${formatter.format(now)}',
-          createdAt: now.subtract(const Duration(days: 1)),
-          duration: const Duration(minutes: 12, seconds: 4),
-          transcriptionStatus: RecordingTranscriptionStatus.inProgress,
-        ),
-        isFlagged: true,
-        tags: const ['Personal'],
-      ),
-      LibraryItem(
-        session: RecordingSession(
-          id: const Uuid().v4(),
-          title: 'Product Sprint Planning',
-          createdAt: now.subtract(const Duration(days: 4)),
-          duration: const Duration(minutes: 55, seconds: 40),
-          transcriptionStatus: RecordingTranscriptionStatus.failed,
-        ),
-        tags: const ['Sprint', 'Planning'],
-      ),
-    ]);
   }
 }

@@ -61,6 +61,12 @@ class _AppBootstrapState extends State<AppBootstrap> {
             audioFilePath: session.filePath!,
             modelId: _settingsController.selectedAIModel.modelId,
             language: _settingsController.defaultTranscriptionLanguage,
+            onStatusChanged: (sessionId, status) {
+              _recordingController.updateSessionTranscriptionStatus(
+                sessionId,
+                status,
+              );
+            },
           );
         }
       },

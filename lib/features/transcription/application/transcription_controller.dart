@@ -14,7 +14,6 @@ enum TranscriptionFilter {
 class TranscriptionController extends ChangeNotifier {
   TranscriptionController() {
     _geminiService = GeminiService();
-    _seedMockData();
   }
 
   late GeminiService _geminiService;
@@ -111,6 +110,7 @@ class TranscriptionController extends ChangeNotifier {
     required String audioFilePath,
     required String modelId,
     String? language,
+    Function(String sessionId, RecordingTranscriptionStatus status)? onStatusChanged,
   }) async {
     final index = _entries.indexWhere((entry) => entry.id == entryId);
     if (index == -1) return;
@@ -119,6 +119,12 @@ class TranscriptionController extends ChangeNotifier {
       status: TranscriptionStatus.processing,
     );
     notifyListeners();
+
+    // Notify processing started
+    final sessionId = _entries[index].sourceSessionId;
+    if (sessionId != null) {
+      onStatusChanged?.call(sessionId, RecordingTranscriptionStatus.inProgress);
+    }
 
     try {
       final transcription = await _geminiService.transcribeAudio(
@@ -138,12 +144,22 @@ class TranscriptionController extends ChangeNotifier {
         status: TranscriptionStatus.completed,
       );
       notifyListeners();
+
+      // Notify completed
+      if (sessionId != null) {
+        onStatusChanged?.call(sessionId, RecordingTranscriptionStatus.completed);
+      }
     } catch (e) {
       _entries[index] = _entries[index].copyWith(
         status: TranscriptionStatus.failed,
         summary: 'Transcription failed: $e',
       );
       notifyListeners();
+
+      // Notify failed
+      if (sessionId != null) {
+        onStatusChanged?.call(sessionId, RecordingTranscriptionStatus.failed);
+      }
     }
   }
 
@@ -165,46 +181,5 @@ class TranscriptionController extends ChangeNotifier {
   void setActiveEntry(String id) {
     _activeEntryId = id;
     notifyListeners();
-  }
-
-  void _seedMockData() {
-    final now = DateTime.now();
-    _entries.addAll([
-      TranscriptionEntry(
-        id: const Uuid().v4(),
-        title: 'Client Interview',
-        createdAt: now.subtract(const Duration(hours: 5)),
-        language: 'English',
-        status: TranscriptionStatus.completed,
-        duration: const Duration(minutes: 28, seconds: 12),
-        summary:
-            'Discussion about project milestones, deliverables, and risks.',
-        transcript:
-            'Client: Great to connect today. Let’s align on the upcoming deliverables...\n\nYou: Absolutely, we have three main milestones...',
-        isFavorite: true,
-      ),
-      TranscriptionEntry(
-        id: const Uuid().v4(),
-        title: 'Standup Notes',
-        createdAt: now.subtract(const Duration(days: 1)),
-        language: 'English',
-        status: TranscriptionStatus.processing,
-        duration: const Duration(minutes: 14, seconds: 48),
-        summary: 'Daily sync waiting for AI transcription.',
-      ),
-      TranscriptionEntry(
-        id: const Uuid().v4(),
-        title: 'Lecture Highlights',
-        createdAt: now.subtract(const Duration(days: 3)),
-        language: 'Finnish',
-        status: TranscriptionStatus.completed,
-        duration: const Duration(minutes: 52, seconds: 5),
-        summary:
-            'Overview of signal processing fundamentals with key formulae.',
-        transcript:
-            'Professor: The Fourier transform allows us to observe signals in the frequency domain...\n\nNote: Remember to review the Nyquist theorem.',
-      ),
-    ]);
-    _activeEntryId = _entries.first.id;
   }
 }
