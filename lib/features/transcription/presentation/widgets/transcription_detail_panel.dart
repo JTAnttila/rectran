@@ -207,6 +207,12 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
               subtitle: const Text('Structured data as .json'),
               onTap: () => _exportAsJson(context),
             ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf),
+              title: const Text('Export as PDF'),
+              subtitle: const Text('Formatted document as .pdf'),
+              onTap: () => _exportAsPdf(context),
+            ),
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.description_outlined),
@@ -274,6 +280,24 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
           'duration': widget.entry.duration.inSeconds,
           'status': widget.entry.status.name,
         },
+      );
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _exportAsPdf(BuildContext context) async {
+    Navigator.pop(context);
+    try {
+      await _exportService.exportAsPdf(
+        transcript: widget.entry.transcript,
+        summary: widget.entry.summary ?? 'No summary available',
+        createdAt: widget.entry.createdAt,
+        title: widget.entry.title,
       );
     } catch (e) {
       if (context.mounted) {

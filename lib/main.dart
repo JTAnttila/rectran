@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:rectran/app.dart';
 import 'package:rectran/features/library/application/audio_player_controller.dart';
@@ -11,7 +10,6 @@ import 'package:rectran/features/transcription/application/transcription_control
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env');
   runApp(const AppBootstrap());
 }
 

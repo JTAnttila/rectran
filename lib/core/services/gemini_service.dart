@@ -2,20 +2,23 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:rectran/core/config/ai_model.dart';
+import 'package:rectran/core/services/secure_storage_service.dart';
 
 class GeminiService {
+  final SecureStorageService _storageService = SecureStorageService();
 
-  String get _apiKey {
-    final key = dotenv.env['GEMINI_API_KEY'];
-    if (key == null || key.isEmpty || key == 'your_gemini_api_key_here') {
-      throw Exception('GEMINI_API_KEY not configured. Please add your API key to the .env file and rebuild the app');
+  Future<String> _getApiKey() async {
+    final key = await _storageService.getApiKey(AIProvider.gemini);
+    if (key == null || key.isEmpty) {
+      throw Exception('Gemini API key not configured. Please add your API key in Settings.');
     }
     return key;
   }
 
-  String _getApiUrl(String modelId) {
-    return 'https://generativelanguage.googleapis.com/v1beta/models/$modelId:generateContent?key=$_apiKey';
+  Future<String> _getApiUrl(String modelId) async {
+    final apiKey = await _getApiKey();
+    return 'https://generativelanguage.googleapis.com/v1beta/models/$modelId:generateContent?key=$apiKey';
   }
 
   Future<String> transcribeAudio({
@@ -67,8 +70,9 @@ class GeminiService {
       }
     };
 
+    final apiUrl = await _getApiUrl(modelId);
     final response = await http.post(
-      Uri.parse(_getApiUrl(modelId)),
+      Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(requestBody),
     );
@@ -148,8 +152,9 @@ class GeminiService {
       }
     };
 
+    final apiUrl = await _getApiUrl(modelId);
     final response = await http.post(
-      Uri.parse(_getApiUrl(modelId)),
+      Uri.parse(apiUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(requestBody),
     );

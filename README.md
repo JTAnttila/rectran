@@ -58,15 +58,17 @@
 
 ### 📤 Export & Share
 
-- Export transcripts as TXT or JSON
+- Export transcripts as TXT, JSON, Markdown, or **PDF**
 - Export summaries in multiple formats
 - Share recordings and transcripts
-- Batch export capabilities
+- Professional PDF documents with formatting
 
 ### ⚙️ Settings
 
+- **In-app API key management** - No need to download project first!
+- Secure encrypted storage for API keys
+- AI model selection (Gemini 2.5 Flash, 1.5 Flash, 1.5 Pro)
 - Theme selection (Light/Dark/System)
-- AI model configuration
 - Language preferences
 - Storage management
 
@@ -96,17 +98,7 @@ Before you begin, ensure you have the following installed:
    ```bash
    flutter pub get
    ```
-3. **Configure API Key**
-
-   Create a `.env` file in the project root:
-
-   ```bash
-   # .env
-   GEMINI_API_KEY=your_api_key_here
-   ```
-
-   ⚠️ **Important**: Never commit your `.env` file to version control!
-4. **Run the app**
+3. **Run the app**
 
    ```bash
    # Run on connected device/emulator
@@ -115,6 +107,16 @@ Before you begin, ensure you have the following installed:
    # Run in release mode for better performance
    flutter run --release
    ```
+
+4. **Configure API Key (First-Time Setup)**
+
+   When you first launch the app:
+   - Go to **Settings** tab
+   - Tap on **"Gemini API Key"**
+   - Enter your Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey))
+   - Your key is securely encrypted and stored on your device
+
+   ✅ **No `.env` file needed!** - Everything is managed in-app
 
 ### Building for Production
 

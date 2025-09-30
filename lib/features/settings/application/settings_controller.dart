@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:rectran/core/theme/app_theme.dart';
 import 'package:rectran/core/config/ai_model.dart';
+import 'package:rectran/core/services/secure_storage_service.dart';
 import 'package:rectran/features/recording/application/recording_controller.dart';
 
 class AccentColorOption {
@@ -18,9 +19,14 @@ class SettingsController extends ChangeNotifier {
   }) : _recordingController = recordingController {
     _recordingController.setHighQualityAudio(_highQualityAudio);
     _recordingController.setAutoCreateDrafts(_autoStartTranscription);
+    _loadSettings();
   }
 
   final RecordingController _recordingController;
+  final SecureStorageService _storageService = SecureStorageService();
+
+  Map<AIProvider, String?> _apiKeys = {};
+  Map<AIProvider, bool> _hasApiKeys = {};
 
   bool _highQualityAudio = true;
   bool _autoStartTranscription = true;
@@ -61,6 +67,19 @@ class SettingsController extends ChangeNotifier {
   String get defaultTranscriptionLanguage => _defaultLanguage;
   Color get accentColor => _accentColor;
   AIModel get selectedAIModel => _selectedAIModel;
+
+  /// Check if a specific provider has an API key configured
+  bool hasApiKeyForProvider(AIProvider provider) => _hasApiKeys[provider] ?? false;
+
+  /// Get API key for a specific provider
+  String? getApiKeyForProvider(AIProvider provider) => _apiKeys[provider];
+
+  /// Check if the currently selected model's provider has an API key
+  bool get hasApiKey => hasApiKeyForProvider(_selectedAIModel.provider);
+
+  /// Get list of configured providers
+  List<AIProvider> get configuredProviders =>
+      AIProvider.values.where((p) => _hasApiKeys[p] == true).toList();
 
   String get accentColorLabel => _accentPalette
       .firstWhere(
@@ -159,6 +178,42 @@ class SettingsController extends ChangeNotifier {
       return;
     }
     _selectedAIModel = value;
+    await _storageService.saveSelectedModel(value.modelId);
+    notifyListeners();
+  }
+
+  Future<void> _loadSettings() async {
+    // Load API keys for all providers
+    for (final provider in AIProvider.values) {
+      _hasApiKeys[provider] = await _storageService.hasApiKey(provider);
+      if (_hasApiKeys[provider] == true) {
+        _apiKeys[provider] = await _storageService.getApiKey(provider);
+      }
+    }
+
+    // Load selected model
+    final savedModel = await _storageService.getSelectedModel();
+    if (savedModel != null) {
+      final model = AIModel.values.firstWhere(
+        (m) => m.modelId == savedModel,
+        orElse: () => AIModel.gemini25Flash,
+      );
+      _selectedAIModel = model;
+    }
+    notifyListeners();
+  }
+
+  Future<void> saveApiKey(AIProvider provider, String apiKey) async {
+    await _storageService.saveApiKey(provider, apiKey);
+    _apiKeys[provider] = apiKey;
+    _hasApiKeys[provider] = true;
+    notifyListeners();
+  }
+
+  Future<void> deleteApiKey(AIProvider provider) async {
+    await _storageService.deleteApiKey(provider);
+    _apiKeys[provider] = null;
+    _hasApiKeys[provider] = false;
     notifyListeners();
   }
 }

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 /// Service for exporting transcripts and summaries to various formats
 class ExportService {
@@ -101,6 +103,94 @@ class ExportService {
 
     final content = _formatJsonContent(data);
     await _shareContent(content, fileName, 'application/json');
+  }
+
+  /// Export transcript and summary as PDF
+  Future<void> exportAsPdf({
+    required String transcript,
+    required String summary,
+    required DateTime createdAt,
+    String? title,
+  }) async {
+    final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(createdAt);
+    final fileName = title != null
+        ? '${_sanitizeFileName(title)}_$formattedDate.pdf'
+        : 'transcription_$formattedDate.pdf';
+
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(40),
+        build: (context) {
+          return [
+            if (title != null)
+              pw.Header(
+                level: 0,
+                child: pw.Text(
+                  title,
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              'Created: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(createdAt)}',
+              style: pw.TextStyle(
+                fontSize: 10,
+                color: PdfColors.grey700,
+              ),
+            ),
+            pw.SizedBox(height: 20),
+            pw.Header(
+              level: 1,
+              child: pw.Text(
+                'Summary',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              summary,
+              style: const pw.TextStyle(fontSize: 12, lineSpacing: 1.5),
+            ),
+            pw.SizedBox(height: 20),
+            pw.Header(
+              level: 1,
+              child: pw.Text(
+                'Transcript',
+                style: pw.TextStyle(
+                  fontSize: 18,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+            ),
+            pw.SizedBox(height: 10),
+            pw.Text(
+              transcript,
+              style: const pw.TextStyle(fontSize: 11, lineSpacing: 1.5),
+            ),
+          ];
+        },
+      ),
+    );
+
+    // Save PDF to temporary directory
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/$fileName');
+    await file.writeAsBytes(await pdf.save());
+
+    // Share the PDF file
+    await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'application/pdf')],
+      subject: fileName,
+    );
   }
 
   String _formatTextContent({
