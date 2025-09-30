@@ -10,7 +10,6 @@ import 'package:rectran/features/recording/presentation/widgets/record_action_bu
 import 'package:rectran/features/recording/presentation/widgets/record_status_chip.dart';
 import 'package:rectran/features/recording/presentation/widgets/record_timer_display.dart';
 import 'package:rectran/features/recording/presentation/widgets/waveform_placeholder.dart';
-import 'package:rectran/features/settings/presentation/screens/settings_screen.dart';
 import 'package:rectran/features/transcription/application/transcription_controller.dart';
 import 'package:rectran/features/transcription/presentation/screens/transcription_detail_screen.dart';
 
@@ -27,15 +26,6 @@ class RecordingScreen extends StatelessWidget {
         SliverAppBar(
           title: const Text('Voice Recorder'),
           floating: true,
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(SettingsScreen.routeName);
-              },
-              icon: const Icon(Icons.settings_outlined),
-              tooltip: 'Settings',
-            ),
-          ],
         ),
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
