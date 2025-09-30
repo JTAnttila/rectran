@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,17 +16,11 @@ class TranscriptionDetailScreen extends StatelessWidget {
     final args = ModalRoute.of(context)?.settings.arguments;
     final entryId = args as String?;
     final controller = context.watch<TranscriptionController>();
-    TranscriptionEntry? entry;
-    if (entryId != null) {
-      try {
-        entry = controller.entries
-            .firstWhere((element) => element.id == entryId);
-      } catch (_) {
-        entry = controller.activeEntry;
-      }
-    } else {
-      entry = controller.activeEntry;
-    }
+
+    final entry = entryId != null
+        ? controller.entries.firstWhereOrNull((element) => element.id == entryId) ??
+          controller.activeEntry
+        : controller.activeEntry;
 
     final resolvedEntry = entry;
 

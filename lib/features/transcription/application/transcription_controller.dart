@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -33,11 +34,8 @@ class TranscriptionController extends ChangeNotifier {
     if (_activeEntryId == null) {
       return _entries.first;
     }
-    try {
-      return _entries.firstWhere((entry) => entry.id == _activeEntryId);
-    } catch (_) {
-      return _entries.first;
-    }
+    return _entries.firstWhereOrNull((entry) => entry.id == _activeEntryId) ??
+           _entries.firstOrNull;
   }
 
   Iterable<TranscriptionEntry> get filteredEntries => _entries.where((entry) {

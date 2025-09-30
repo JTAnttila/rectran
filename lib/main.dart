@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,22 +51,24 @@ class _AppBootstrapState extends State<AppBootstrap> {
           );
 
           // Find the created entry and start transcription
-          final entry = _transcriptionController.entries.firstWhere(
+          final entry = _transcriptionController.entries.firstWhereOrNull(
             (e) => e.sourceSessionId == session.id,
           );
 
-          _transcriptionController.startTranscription(
-            entryId: entry.id,
-            audioFilePath: session.filePath!,
-            modelId: _settingsController.selectedAIModel.modelId,
-            language: _settingsController.defaultTranscriptionLanguage,
-            onStatusChanged: (sessionId, status) {
-              _recordingController.updateSessionTranscriptionStatus(
-                sessionId,
-                status,
-              );
-            },
-          );
+          if (entry != null) {
+            _transcriptionController.startTranscription(
+              entryId: entry.id,
+              audioFilePath: session.filePath!,
+              modelId: _settingsController.selectedAIModel.modelId,
+              language: _settingsController.defaultTranscriptionLanguage,
+              onStatusChanged: (sessionId, status) {
+                _recordingController.updateSessionTranscriptionStatus(
+                  sessionId,
+                  status,
+                );
+              },
+            );
+          }
         }
       },
     );
