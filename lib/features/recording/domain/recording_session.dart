@@ -7,6 +7,7 @@ class RecordingSession extends Equatable {
     required this.createdAt,
     required this.duration,
     this.transcriptionStatus = RecordingTranscriptionStatus.notStarted,
+    this.filePath,
   });
 
   final String id;
@@ -14,6 +15,7 @@ class RecordingSession extends Equatable {
   final DateTime createdAt;
   final Duration duration;
   final RecordingTranscriptionStatus transcriptionStatus;
+  final String? filePath;
 
   RecordingSession copyWith({
     String? id,
@@ -21,6 +23,7 @@ class RecordingSession extends Equatable {
     DateTime? createdAt,
     Duration? duration,
     RecordingTranscriptionStatus? transcriptionStatus,
+    String? filePath,
   }) {
     return RecordingSession(
       id: id ?? this.id,
@@ -29,12 +32,13 @@ class RecordingSession extends Equatable {
       duration: duration ?? this.duration,
       transcriptionStatus:
           transcriptionStatus ?? this.transcriptionStatus,
+      filePath: filePath ?? this.filePath,
     );
   }
 
   @override
-  List<Object> get props =>
-      [id, title, createdAt, duration, transcriptionStatus];
+  List<Object?> get props =>
+      [id, title, createdAt, duration, transcriptionStatus, filePath];
 }
 
 enum RecordingTranscriptionStatus {

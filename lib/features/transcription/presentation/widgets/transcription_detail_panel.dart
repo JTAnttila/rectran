@@ -28,7 +28,8 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
   @override
   void didUpdateWidget(covariant TranscriptionDetailPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.entry.id != widget.entry.id) {
+    if (oldWidget.entry.id != widget.entry.id ||
+        oldWidget.entry.transcript != widget.entry.transcript) {
       _controller.text = widget.entry.transcript;
     }
   }
@@ -44,7 +45,7 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:rectran/core/services/audio_recording_service.dart';
 import 'package:rectran/features/recording/domain/recording_session.dart';
 import 'package:rectran/features/recording/domain/recording_status.dart';
 
@@ -10,8 +11,11 @@ class RecordingController extends ChangeNotifier {
   RecordingController({
     this.onSessionSaved,
     this.onDraftCreated,
-  });
+  }) {
+    _audioService = AudioRecordingService();
+  }
 
+  late AudioRecordingService _audioService;
   RecordingStatus _status = RecordingStatus.idle;
   Duration _elapsed = Duration.zero;
   Timer? _ticker;
@@ -19,6 +23,7 @@ class RecordingController extends ChangeNotifier {
   String? _errorMessage;
   bool _highQualityAudio = true;
   bool _autoCreateDrafts = true;
+  String? _currentRecordingPath;
 
   final void Function(RecordingSession session)? onSessionSaved;
   final void Function(String sessionId, String title, Duration duration)?
@@ -61,20 +66,35 @@ class RecordingController extends ChangeNotifier {
     }
   }
 
-  void _startRecording() {
-    _status = RecordingStatus.recording;
-    _ticker?.cancel();
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      _elapsed += const Duration(seconds: 1);
+  Future<void> _startRecording() async {
+    try {
+      final path = await _audioService.startRecording(
+        highQuality: _highQualityAudio,
+      );
+
+      if (path == null) {
+        setError('Failed to start recording: no permission');
+        return;
+      }
+
+      _currentRecordingPath = path;
+      _status = RecordingStatus.recording;
+      _ticker?.cancel();
+      _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+        _elapsed += const Duration(seconds: 1);
+        notifyListeners();
+      });
       notifyListeners();
-    });
-    notifyListeners();
+    } catch (e) {
+      setError('Failed to start recording: $e');
+    }
   }
 
-  void pauseRecording() {
+  Future<void> pauseRecording() async {
     if (_status != RecordingStatus.recording) {
       return;
     }
+    await _audioService.pauseRecording();
     _status = RecordingStatus.paused;
     _ticker?.cancel();
     notifyListeners();
@@ -88,27 +108,35 @@ class RecordingController extends ChangeNotifier {
     _ticker?.cancel();
     notifyListeners();
 
-    final processingDelay = _highQualityAudio
-        ? const Duration(seconds: 3)
-        : const Duration(seconds: 1);
-    await Future<void>.delayed(processingDelay);
+    try {
+      final filePath = await _audioService.stopRecording();
 
-    final session = RecordingSession(
-      id: const Uuid().v4(),
-      title: _generateTitle(),
-      createdAt: DateTime.now(),
-      duration: _elapsed,
-      transcriptionStatus: RecordingTranscriptionStatus.inProgress,
-    );
-    _sessions.insert(0, session);
-    onSessionSaved?.call(session);
+      if (filePath == null) {
+        setError('Failed to save recording');
+        return;
+      }
 
-    _status = RecordingStatus.idle;
-    _elapsed = Duration.zero;
-    notifyListeners();
+      final session = RecordingSession(
+        id: const Uuid().v4(),
+        title: _generateTitle(),
+        createdAt: DateTime.now(),
+        duration: _elapsed,
+        transcriptionStatus: RecordingTranscriptionStatus.notStarted,
+        filePath: filePath,
+      );
+      _sessions.insert(0, session);
+      onSessionSaved?.call(session);
 
-    if (_autoCreateDrafts) {
-      onDraftCreated?.call(session.id, session.title, session.duration);
+      _status = RecordingStatus.idle;
+      _elapsed = Duration.zero;
+      _currentRecordingPath = null;
+      notifyListeners();
+
+      if (_autoCreateDrafts) {
+        onDraftCreated?.call(session.id, session.title, session.duration);
+      }
+    } catch (e) {
+      setError('Failed to stop recording: $e');
     }
   }
 
@@ -151,6 +179,7 @@ class RecordingController extends ChangeNotifier {
   @override
   void dispose() {
     _ticker?.cancel();
+    _audioService.dispose();
     super.dispose();
   }
 }

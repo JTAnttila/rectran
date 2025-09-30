@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rectran/core/theme/app_theme.dart';
+import 'package:rectran/core/config/ai_model.dart';
 import 'package:rectran/features/recording/application/recording_controller.dart';
 
 class AccentColorOption {
@@ -29,6 +30,7 @@ class SettingsController extends ChangeNotifier {
   ThemeMode _manualThemeMode = ThemeMode.dark;
   String _defaultLanguage = 'English (US)';
   Color _accentColor = AppTheme.defaultSeed;
+  AIModel _selectedAIModel = AIModel.gemini25Flash;
 
   static const List<AccentColorOption> _accentPalette = [
     AccentColorOption(label: 'Deep Purple', color: Color(0xFF5B3B8C)),
@@ -58,6 +60,7 @@ class SettingsController extends ChangeNotifier {
       _useSystemTheme ? ThemeMode.system : _manualThemeMode;
   String get defaultTranscriptionLanguage => _defaultLanguage;
   Color get accentColor => _accentColor;
+  AIModel get selectedAIModel => _selectedAIModel;
 
   String get accentColorLabel => _accentPalette
       .firstWhere(
@@ -148,6 +151,14 @@ class SettingsController extends ChangeNotifier {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     _cloudBackupBusy = false;
+    notifyListeners();
+  }
+
+  Future<void> setSelectedAIModel(AIModel value) async {
+    if (_selectedAIModel == value) {
+      return;
+    }
+    _selectedAIModel = value;
     notifyListeners();
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:rectran/features/library/domain/library_item.dart';
+import 'package:rectran/features/library/application/audio_player_controller.dart';
 import 'package:rectran/features/transcription/presentation/screens/transcription_detail_screen.dart';
 
 class LibraryListItem extends StatelessWidget {
@@ -19,15 +21,28 @@ class LibraryListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final session = item.session;
     final colorScheme = Theme.of(context).colorScheme;
+    final audioPlayer = context.watch<AudioPlayerController>();
+    final isPlaying = audioPlayer.isPlayingRecording(session.id);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       leading: CircleAvatar(
         backgroundColor: colorScheme.primaryContainer,
-        child: Icon(
-          Icons.play_arrow,
-          color: colorScheme.onPrimaryContainer,
-        ),
+        child: session.filePath != null
+            ? IconButton(
+                onPressed: () {
+                  audioPlayer.togglePlayPause(session.id, session.filePath!);
+                },
+                icon: Icon(
+                  isPlaying ? Icons.pause : Icons.play_arrow,
+                  color: colorScheme.onPrimaryContainer,
+                ),
+                padding: EdgeInsets.zero,
+              )
+            : Icon(
+                Icons.music_note,
+                color: colorScheme.onPrimaryContainer,
+              ),
       ),
       title: Text(session.title),
       subtitle: Text(

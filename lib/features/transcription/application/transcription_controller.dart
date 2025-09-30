@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:rectran/core/services/gemini_service.dart';
 import 'package:rectran/features/transcription/domain/transcription_entry.dart';
 
 enum TranscriptionFilter {
@@ -12,9 +13,11 @@ enum TranscriptionFilter {
 
 class TranscriptionController extends ChangeNotifier {
   TranscriptionController() {
+    _geminiService = GeminiService();
     _seedMockData();
   }
 
+  late GeminiService _geminiService;
   final List<TranscriptionEntry> _entries = <TranscriptionEntry>[];
   String _query = '';
   TranscriptionFilter _filter = TranscriptionFilter.all;
@@ -101,6 +104,47 @@ class TranscriptionController extends ChangeNotifier {
     _entries.insert(0, entry);
     _activeEntryId = entry.id;
     notifyListeners();
+  }
+
+  Future<void> startTranscription({
+    required String entryId,
+    required String audioFilePath,
+    required String modelId,
+    String? language,
+  }) async {
+    final index = _entries.indexWhere((entry) => entry.id == entryId);
+    if (index == -1) return;
+
+    _entries[index] = _entries[index].copyWith(
+      status: TranscriptionStatus.processing,
+    );
+    notifyListeners();
+
+    try {
+      final transcription = await _geminiService.transcribeAudio(
+        audioFilePath: audioFilePath,
+        modelId: modelId,
+        language: language,
+      );
+
+      final summary = await _geminiService.generateSummary(
+        transcription: transcription,
+        modelId: modelId,
+      );
+
+      _entries[index] = _entries[index].copyWith(
+        transcript: transcription,
+        summary: summary,
+        status: TranscriptionStatus.completed,
+      );
+      notifyListeners();
+    } catch (e) {
+      _entries[index] = _entries[index].copyWith(
+        status: TranscriptionStatus.failed,
+        summary: 'Transcription failed: $e',
+      );
+      notifyListeners();
+    }
   }
 
   void removeBySourceSessionId(String sessionId) {

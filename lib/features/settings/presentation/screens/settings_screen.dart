@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:rectran/core/config/ai_model.dart';
 import 'package:rectran/features/settings/application/settings_controller.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -39,6 +40,12 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 const _SectionHeader(label: 'Transcription'),
+                ListTile(
+                  title: const Text('AI Model'),
+                  subtitle: Text(controller.selectedAIModel.displayName),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
+                  onTap: () => _showAIModelPicker(context, controller),
+                ),
                 ListTile(
                   title: const Text('Default language'),
                   subtitle: Text(controller.defaultTranscriptionLanguage),
@@ -186,6 +193,37 @@ class SettingsScreen extends StatelessWidget {
 
     if (selected != null) {
       await controller.setAccentColor(selected);
+    }
+  }
+
+  static Future<void> _showAIModelPicker(
+    BuildContext context,
+    SettingsController controller,
+  ) async {
+    final selected = await showModalBottomSheet<AIModel>(
+      context: context,
+      builder: (bottomSheetContext) {
+        return SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            children: AIModel.values.map((model) {
+              return RadioListTile<AIModel>(
+                title: Text(model.displayName),
+                subtitle: Text(model.modelId),
+                value: model,
+                groupValue: controller.selectedAIModel,
+                onChanged: (value) {
+                  Navigator.of(bottomSheetContext).pop(value);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+
+    if (selected != null) {
+      await controller.setSelectedAIModel(selected);
     }
   }
 
