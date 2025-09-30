@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:rectran/core/services/gemini_service.dart';
+import 'package:rectran/features/recording/domain/recording_session.dart';
 import 'package:rectran/features/transcription/domain/transcription_entry.dart';
 
 enum TranscriptionFilter {
