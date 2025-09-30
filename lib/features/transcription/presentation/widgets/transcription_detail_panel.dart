@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:rectran/core/services/export_service.dart';
+import 'package:rectran/core/utils/time_formatter.dart';
 import 'package:rectran/features/transcription/domain/transcription_entry.dart';
 
 class TranscriptionDetailPanel extends StatefulWidget {
@@ -80,7 +81,7 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
                 avatar: Icon(_statusIcon(widget.entry.status)),
               ),
               Chip(
-                label: Text(_formatDuration(widget.entry.duration)),
+                label: Text(TimeFormatter.formatDuration(widget.entry.duration)),
                 avatar: const Icon(Icons.timer_outlined),
               ),
             ],
@@ -171,14 +172,7 @@ class _TranscriptionDetailPanelState extends State<TranscriptionDetailPanel> {
     };
   }
 
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '${duration.inHours > 0 ? '${duration.inHours.toString().padLeft(2, '0')}:' : ''}$minutes:$seconds';
-  }
-
   void _showExportOptions(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     showModalBottomSheet(

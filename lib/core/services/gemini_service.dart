@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -40,7 +41,7 @@ class GeminiService {
       mimeType = 'audio/wav';
     }
 
-    print('Transcribing audio: ${audioBytes.length} bytes, MIME: $mimeType, Model: $modelId');
+    debugPrint('Transcribing audio: ${audioBytes.length} bytes, MIME: $mimeType, Model: $modelId');
 
     final prompt = language != null
         ? 'Transcribe this audio in $language. Provide only the transcription text without any additional commentary.'
@@ -84,7 +85,7 @@ class GeminiService {
   String _extractTranscription(Map<String, dynamic> response) {
     try {
       // Log full response for debugging
-      print('Gemini API Response: ${jsonEncode(response)}');
+      debugPrint('Gemini API Response: ${jsonEncode(response)}');
 
       // Check for errors in response
       if (response.containsKey('error')) {
@@ -122,7 +123,7 @@ class GeminiService {
 
       return text.trim();
     } catch (e) {
-      print('Error extracting transcription: $e');
+      debugPrint('Error extracting transcription: $e');
       rethrow;
     }
   }

@@ -3,6 +3,12 @@ description: Voice recording and transcription app following Material Design 3 p
 publish_to: "none"
 version: 0.1.0+1
 
+# Author information
+# Developed by Juuso Anttila (juuso@anttila.io)
+homepage: https://github.com/JTAnttila/rectran
+repository: https://github.com/JTAnttila/rectran
+issue_tracker: https://github.com/JTAnttila/rectran/issues
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
 

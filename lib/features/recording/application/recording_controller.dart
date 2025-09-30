@@ -23,7 +23,6 @@ class RecordingController extends ChangeNotifier {
   String? _errorMessage;
   bool _highQualityAudio = true;
   bool _autoCreateDrafts = true;
-  String? _currentRecordingPath;
 
   final void Function(RecordingSession session)? onSessionSaved;
   final void Function(String sessionId, String title, Duration duration)?
@@ -77,7 +76,6 @@ class RecordingController extends ChangeNotifier {
         return;
       }
 
-      _currentRecordingPath = path;
       _status = RecordingStatus.recording;
       _ticker?.cancel();
       _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -129,7 +127,6 @@ class RecordingController extends ChangeNotifier {
 
       _status = RecordingStatus.idle;
       _elapsed = Duration.zero;
-      _currentRecordingPath = null;
       notifyListeners();
 
       if (_autoCreateDrafts) {

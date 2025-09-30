@@ -160,7 +160,7 @@ class ExportService {
 
   String _formatJsonContent(Map<String, dynamic> data) {
     // Pretty print JSON with 2 space indentation
-    final encoder = const JsonEncoder.withIndent('  ');
+    const encoder = JsonEncoder.withIndent('  ');
     return encoder.convert(data);
   }
 
@@ -175,7 +175,7 @@ class ExportService {
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(content);
 
-      // Share the file
+      // Share the file using SharePlus
       await Share.shareXFiles(
         [XFile(file.path, mimeType: mimeType)],
         subject: fileName,

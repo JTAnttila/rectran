@@ -1,6 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:rectran/features/recording/domain/recording_session.dart';
 import 'package:rectran/features/library/domain/library_filter.dart';

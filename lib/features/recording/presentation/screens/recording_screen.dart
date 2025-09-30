@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:rectran/core/utils/time_formatter.dart';
 import 'package:rectran/features/library/application/library_controller.dart';
 import 'package:rectran/features/recording/application/recording_controller.dart';
 import 'package:rectran/features/recording/domain/recording_session.dart';
@@ -93,7 +94,7 @@ class RecordingScreen extends StatelessWidget {
                         ),
                         title: Text(session.title),
                         subtitle: Text(
-                          '${_formatDuration(session.duration)} · ${_formatDate(session.createdAt)}',
+                          '${TimeFormatter.formatDuration(session.duration)} · ${_formatDate(session.createdAt)}',
                         ),
                         trailing: _TranscriptionStatus(status: session.transcriptionStatus),
                         onTap: () {
@@ -115,12 +116,6 @@ class RecordingScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '${duration.inHours > 0 ? '${duration.inHours.toString().padLeft(2, '0')}:' : ''}$minutes:$seconds';
   }
 
   String _formatDate(DateTime date) {

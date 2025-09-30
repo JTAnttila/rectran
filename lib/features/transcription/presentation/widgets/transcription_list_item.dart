@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:rectran/core/utils/time_formatter.dart';
 import 'package:rectran/features/transcription/domain/transcription_entry.dart';
 
 class TranscriptionListItem extends StatelessWidget {
@@ -35,7 +36,7 @@ class TranscriptionListItem extends StatelessWidget {
         ),
         title: Text(entry.title),
         subtitle: Text(
-          '${entry.language} • ${_formatDuration(entry.duration)}'
+          '${entry.language} • ${TimeFormatter.formatDuration(entry.duration)}'
           '\n${_statusLabel(entry.status)}',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -70,9 +71,4 @@ class TranscriptionListItem extends StatelessWidget {
     };
   }
 
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '${duration.inHours > 0 ? '${duration.inHours.toString().padLeft(2, '0')}:' : ''}$minutes:$seconds';
-  }
 }
