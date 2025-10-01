@@ -154,8 +154,14 @@ class RecordingService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
     
     override fun onDestroy() {
-        mediaRecorder?.release()
-        mediaRecorder = null
+        try {
+            mediaRecorder?.release()
+            mediaRecorder = null
+            stopForeground(true) // Remove notification
+            Log.d(TAG, "RecordingService destroyed")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onDestroy", e)
+        }
         super.onDestroy()
     }
 }

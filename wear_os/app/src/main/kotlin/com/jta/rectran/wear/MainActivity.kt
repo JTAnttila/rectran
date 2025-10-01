@@ -181,6 +181,24 @@ class MainActivity : ComponentActivity() {
         Log.d(TAG, "Stopped recording")
     }
     
+    override fun onPause() {
+        super.onPause()
+        // Clean up callback when not visible to save battery
+        WearCommunicationManager.onTransferProgress = null
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Restore callback when visible
+        WearCommunicationManager.onTransferProgress = { current, total ->
+            kotlinx.coroutines.MainScope().launch {
+                transferProgress = Pair(current, total)
+            }
+        }
+        // Refresh connection status
+        checkConnectionStatus()
+    }
+    
     override fun onDestroy() {
         super.onDestroy()
         WearCommunicationManager.onTransferProgress = null
