@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.JTA.rectran"
+    namespace = "com.jta.rectran"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.JTA.rectran"
+        applicationId = "com.jta.rectran"  // Must match watch app EXACTLY (lowercase)
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
@@ -29,7 +29,21 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // Define debug signing config explicitly to ensure consistency
+        getByName("debug") {
+            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
+        debug {
+            // Explicitly use debug signing for consistency with watch app
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
@@ -59,4 +73,13 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Wear OS Data Layer API
+    implementation("com.google.android.gms:play-services-wearable:18.1.0")
+    
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }

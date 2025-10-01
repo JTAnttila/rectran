@@ -24,6 +24,8 @@
 - 🎯 **Simple & Intuitive** - Clean Material Design 3 interface
 - 🤖 **AI-Powered** - Leverages Google Gemini for accurate transcriptions
 - 📱 **Cross-Platform** - Works on Android and iOS
+- ⌚ **Wear OS Support** - Record directly from your smartwatch (Wear OS 3.0+)
+- 🔄 **Seamless Integration** - Watch recordings automatically transcribe on phone
 - 🎨 **Modern Design** - Beautiful adaptive UI with theme support
 - 📦 **Lightweight** - Optimized for minimal app size
 - 🔒 **Privacy-First** - Local storage with optional export
@@ -39,6 +41,7 @@
 - Pause and resume functionality
 - Automatic file management
 - Support for multiple audio formats
+- **⌚ Wear OS app** - Record on smartwatch, transcribe on phone
 
 ### 📝 Transcription
 
@@ -63,6 +66,17 @@
 - Share recordings and transcripts
 - Professional PDF documents with formatting
 
+### ⌚ Wear OS Integration
+
+- **Universal Wear OS Support** - Works with Galaxy Watch, Pixel Watch, TicWatch, and more!
+- **No Samsung SDK Required** - Uses standard Wear OS Data Layer API
+- **Seamless Sync** - Automatically transfers recordings to phone via Bluetooth
+- **Success Notifications** - Visual confirmation when transcription completes
+- **Battery Efficient** - Optimized for watch battery life
+- **Simple Interface** - Large, easy-to-use buttons designed for watch screens
+
+👉 **[Get started with Wear OS →](wear_os/QUICKSTART.md)**
+
 ### ⚙️ Settings
 
 - **In-app API key management** - No need to download project first!
@@ -75,6 +89,8 @@
 ---
 
 ## 🚀 Quick Start
+
+### 📱 Phone App
 
 ### Prerequisites
 
@@ -137,6 +153,27 @@ flutter build appbundle --release
 ```bash
 flutter build ios --release
 ```
+
+### ⌚ Wear OS App (Optional)
+
+Want to record from your Wear OS watch? Check out the companion app:
+
+**Quick Setup (No Samsung SDK required!):**
+1. Enable developer mode on watch
+2. Build and install: See [wear_os/QUICKSTART.md](wear_os/QUICKSTART.md)
+3. Start recording from your wrist! 🎙️
+
+**Compatible Devices:**
+- ✅ Samsung Galaxy Watch 4, 5, 6
+- ✅ Google Pixel Watch, Pixel Watch 2
+- ✅ TicWatch Pro series
+- ✅ Any Wear OS 3.0+ watch
+
+**Documentation:**
+- 📖 [Full README](wear_os/README.md) - Complete feature documentation
+- 🚀 [Quick Start](wear_os/QUICKSTART.md) - Get running in 10 minutes
+- 🔗 Phone Integration - Coming soon
+- 🏗️ Architecture - Coming soon
 
 ---
 
@@ -404,6 +441,54 @@ Current size: **~50MB per architecture** (down from 200MB universal APK)
    ```bash
    flutter build apk --analyze-size
    ```
+
+---
+
+## ⌚ Wear OS Integration
+
+Rectran includes a companion Wear OS app that allows you to record audio directly on your smartwatch!
+
+### Features
+
+- 🎙️ **Record on Watch** - Capture audio using your Wear OS smartwatch
+- 📤 **Auto-Transfer** - Recordings automatically sent to your phone
+- 🤖 **Auto-Transcribe** - Phone transcribes using Gemini AI
+- ✅ **Instant Feedback** - Get success notifications on your watch
+
+### Compatibility
+
+- **Wear OS 3.0+** (Samsung Galaxy Watch 4, Watch 5, Watch 6, Pixel Watch, etc.)
+- Works with any Wear OS device paired with your Android phone
+- No Samsung-specific dependencies required
+
+### Quick Start
+
+1. **Build & Install Watch App:**
+   ```powershell
+   cd wear_os
+   .\gradlew.bat assembleDebug
+   .\adb-wear.ps1 connect <WATCH_IP>:5555
+   .\adb-wear.ps1 install
+   ```
+
+2. **Test Integration:**
+   ```powershell
+   cd ..
+   .\test-wear-integration.ps1
+   ```
+
+3. **Use It:**
+   - Open Rectran Wear on your watch
+   - Tap record, speak, then stop
+   - Recording automatically transfers to phone
+   - Check phone app for transcription!
+
+### Documentation
+
+For detailed setup, troubleshooting, and architecture:
+- 📖 [Wear OS Integration Guide](WEAR_OS_INTEGRATION.md)
+- 🚀 [Watch App Quick Start](wear_os/QUICKSTART.md)
+- 📋 [Installation Guide](wear_os/INSTALL_GUIDE.md)
 
 ---
 

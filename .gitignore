@@ -13,6 +13,12 @@
 .instructions/
 migrate_working_dir/
 
+# Environment variables and secrets
+.env
+*.key
+*.keystore
+!debug.keystore
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -44,3 +50,20 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/.cxx
+/android/.gradle
+/android/local.properties
+
+# Wear OS build artifacts
+/wear_os/app/debug
+/wear_os/app/profile
+/wear_os/app/release
+/wear_os/app/.cxx
+/wear_os/.gradle
+/wear_os/local.properties
+/wear_os/build/
+
+# Temporary files
+*.tmp
+*.bak
+*copy.*
