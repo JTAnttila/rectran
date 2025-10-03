@@ -13,30 +13,45 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SettingsController>(
       builder: (context, controller, _) {
-        return CustomScrollView(
-          slivers: [
-            const SliverAppBar(
-              title: Text('Settings'),
-              floating: true,
-            ),
+        return Scaffold(
+          backgroundColor: const Color(0xFF1A1A1A),
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+                  child: const Text(
+                    'Settings',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+              ),
             SliverList(
               delegate: SliverChildListDelegate([
                 const _SectionHeader(label: 'Recording'),
                 SwitchListTile.adaptive(
                   value: controller.highQualityAudio,
                   onChanged: (value) => controller.setHighQualityAudio(value),
-                  title: const Text('High quality audio'),
-                  subtitle:
-                      const Text('Use lossless compression for recordings'),
+                  title: const Text('High quality audio', style: TextStyle(color: Colors.white)),
+                  subtitle: Text('Use lossless compression for recordings', 
+                    style: TextStyle(color: Colors.white.withOpacity(0.6))),
+                  activeColor: const Color(0xFFFF4757),
                 ),
                 SwitchListTile.adaptive(
                   value: controller.autoStartTranscription,
                   onChanged: (value) =>
                       controller.setAutoStartTranscription(value),
-                  title: const Text('Auto start transcription'),
-                  subtitle: const Text(
+                  title: const Text('Auto start transcription', style: TextStyle(color: Colors.white)),
+                  subtitle: Text(
                     'Send recordings for AI transcription automatically',
+                    style: TextStyle(color: Colors.white.withOpacity(0.6)),
                   ),
+                  activeColor: const Color(0xFFFF4757),
                 ),
                 const Divider(),
                 const _SectionHeader(label: 'AI Configuration'),
@@ -255,7 +270,8 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 32),
               ]),
             ),
-          ],
+            ],
+          ),
         );
       },
     );

@@ -67,3 +67,7 @@ app.*.map.json
 *.tmp
 *.bak
 *copy.*
+
+# PowerShell scripts (development tools)
+*.ps1
+!scripts/*.ps1

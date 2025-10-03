@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wearable.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import org.json.JSONObject
 import java.io.File
 
 /**
@@ -111,15 +111,25 @@ object WearCommunicationManager {
                 }
             """.trimIndent()
             
+            // Send metadata with correct message path format (matching phone app's expected format exactly)
+            val metadataJson = JSONObject().apply {
+                put("fileName", file.name)  // Phone expects "fileName" (camelCase)
+                put("totalChunks", totalChunks)
+                put("fileSize", fileBytes.size)
+                put("timestamp", System.currentTimeMillis())
+            }
+            
+            Log.d(TAG, "Sending metadata JSON: ${metadataJson.toString()}")
+            
             Tasks.await(
                 messageClient.sendMessage(
                     phoneNode.id,
-                    "$MESSAGE_PATH/metadata",
-                    metadata.toByteArray()
+                    "/rectran/audio/metadata",
+                    metadataJson.toString().toByteArray(Charsets.UTF_8)
                 )
             )
             
-            Log.d(TAG, "Metadata sent")
+            Log.d(TAG, "Metadata sent to /rectran/audio/metadata")
             
             // Send file in chunks
             var offset = 0
@@ -129,21 +139,18 @@ object WearCommunicationManager {
                 val chunkSize = minOf(CHUNK_SIZE, fileBytes.size - offset)
                 val chunk = fileBytes.copyOfRange(offset, offset + chunkSize)
                 
-                // Send chunk with index prefix
-                val chunkData = ByteArray(4 + chunk.size)
-                // Add chunk index (4 bytes)
-                chunkData[0] = (chunkIndex shr 24).toByte()
-                chunkData[1] = (chunkIndex shr 16).toByte()
-                chunkData[2] = (chunkIndex shr 8).toByte()
-                chunkData[3] = chunkIndex.toByte()
-                // Add chunk data
-                System.arraycopy(chunk, 0, chunkData, 4, chunk.size)
+                // Encode chunk as JSON with base64 data (matching phone app's expectation)
+                val chunkJson = JSONObject().apply {
+                    put("chunkIndex", chunkIndex)
+                    put("data", android.util.Base64.encodeToString(chunk, android.util.Base64.NO_WRAP))
+                    put("size", chunk.size)
+                }
                 
                 Tasks.await(
                     messageClient.sendMessage(
                         phoneNode.id,
-                        "$MESSAGE_PATH/chunk",
-                        chunkData
+                        "/rectran/audio/chunk",
+                        chunkJson.toString().toByteArray(Charsets.UTF_8)
                     )
                 )
                 
@@ -154,24 +161,16 @@ object WearCommunicationManager {
                 onTransferProgress?.invoke(chunkIndex, totalChunks)
                 
                 Log.d(TAG, "Sent chunk $chunkIndex/$totalChunks (${chunk.size} bytes)")
+                
+                // Small delay to avoid overwhelming the phone
+                delay(10)
             }
             
-            // Send completion message
-            val completion = """
-                {
-                    "type": "audio_complete",
-                    "filename": "${file.name}",
-                    "chunks": $totalChunks
-                }
-            """.trimIndent()
+            // Send completion message (phone app doesn't require this, but good for logging)
+            Log.d(TAG, "All chunks sent. Total: $totalChunks")
             
-            Tasks.await(
-                messageClient.sendMessage(
-                    phoneNode.id,
-                    "$MESSAGE_PATH/complete",
-                    completion.toByteArray()
-                )
-            )
+            // Give phone time to process final chunks
+            delay(500)
             
             Log.d(TAG, "File transfer completed successfully")
             true

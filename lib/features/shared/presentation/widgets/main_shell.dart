@@ -31,47 +31,129 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      body: SafeArea(
-        child: PageStorage(
-          bucket: _bucket,
-          child: IndexedStack(
-            index: _currentIndex,
-            children: _pages,
-          ),
+      backgroundColor: const Color(0xFF1A1A1A),
+      body: PageStorage(
+        bucket: _bucket,
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (value) {
-          if (value == _currentIndex) return;
-          setState(() => _currentIndex = value);
+      bottomNavigationBar: _MinimalistBottomNav(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          if (index == _currentIndex) return;
+          setState(() => _currentIndex = index);
         },
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.mic_none),
-            selectedIcon: Icon(Icons.mic, color: colorScheme.primary),
-            label: 'Record',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.article_outlined),
-            selectedIcon: Icon(Icons.article, color: colorScheme.primary),
-            label: 'Transcripts',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.library_music_outlined),
-            selectedIcon:
-                Icon(Icons.library_music, color: colorScheme.primary),
-            label: 'Library',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings, color: colorScheme.primary),
-            label: 'Settings',
+      ),
+    );
+  }
+}
+
+class _MinimalistBottomNav extends StatelessWidget {
+  const _MinimalistBottomNav({
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 70,
+      decoration: BoxDecoration(
+        color: const Color(0xFF242424),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
         ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavItem(
+              icon: Icons.fiber_manual_record,
+              label: 'Record',
+              isSelected: currentIndex == 0,
+              onTap: () => onTap(0),
+            ),
+            _NavItem(
+              icon: Icons.article_outlined,
+              label: 'Transcripts',
+              isSelected: currentIndex == 1,
+              onTap: () => onTap(1),
+            ),
+            _NavItem(
+              icon: Icons.folder_outlined,
+              label: 'Library',
+              isSelected: currentIndex == 2,
+              onTap: () => onTap(2),
+            ),
+            _NavItem(
+              icon: Icons.settings_outlined,
+              label: 'Settings',
+              isSelected: currentIndex == 3,
+              onTap: () => onTap(3),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected 
+                  ? const Color(0xFFFF4757) 
+                  : Colors.white.withOpacity(0.4),
+              size: 24,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected 
+                    ? const Color(0xFFFF4757) 
+                    : Colors.white.withOpacity(0.4),
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

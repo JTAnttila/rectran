@@ -47,12 +47,12 @@ class ApiException extends AppException {
   final String? endpoint;
 
   const ApiException(
-    super.message, {
+    String message, {
     this.statusCode,
     this.endpoint,
-    super.originalError,
-    super.stackTrace,
-  });
+    dynamic originalError,
+    StackTrace? stackTrace,
+  }) : super(message, originalError, stackTrace);
 
   @override
   String get userMessage {
@@ -91,11 +91,11 @@ class ExportException extends AppException {
   final String? format;
 
   const ExportException(
-    super.message, {
+    String message, {
     this.format,
-    super.originalError,
-    super.stackTrace,
-  });
+    dynamic originalError,
+    StackTrace? stackTrace,
+  }) : super(message, originalError, stackTrace);
 
   @override
   String get userMessage {
